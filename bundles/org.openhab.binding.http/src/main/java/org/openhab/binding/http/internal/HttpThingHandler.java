@@ -32,6 +32,7 @@ import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.DigestAuthentication;
+import org.eclipse.jetty.client.util.SPNEGOAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
@@ -187,6 +188,14 @@ public class HttpThingHandler extends BaseThingHandler {
                         authStore.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM,
                                 config.username, config.password));
                         logger.debug("Digest Authentication configured for thing '{}'", thing.getUID());
+                        break;
+                    case SPNEGO:
+                        SPNEGOAuthentication SPNEGO = new SPNEGOAuthentication(uri);
+                        SPNEGO.setUserName(config.username);
+                        SPNEGO.setUserPassword(config.password);
+                        // SPNEGO.setServiceName(serviceName);
+                        authStore.addAuthentication(SPNEGO);
+                        logger.debug("SPNEGO Authentication configured for thing '{}'", thing.getUID());
                         break;
                     default:
                         logger.warn("Unknown authentication method '{}' for thing '{}'", config.authMode,
