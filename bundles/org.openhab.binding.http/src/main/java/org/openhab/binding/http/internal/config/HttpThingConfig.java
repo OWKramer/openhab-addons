@@ -32,6 +32,8 @@ public class HttpThingConfig {
 
     public String username = "";
     public String password = "";
+    public String HeaderTokenPrefix = "";
+    public String Token = "";
 
     public HttpAuthMode authMode = HttpAuthMode.BASIC;
     public HttpMethod stateMethod = HttpMethod.GET;

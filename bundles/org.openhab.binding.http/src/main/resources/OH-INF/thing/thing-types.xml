@@ -48,12 +48,23 @@
 				<context>password</context>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="Token" type="text">
+				<label>Token</label>
+				<description>Token for Authentication - (OAuth)</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="HeaderTokenPrefix" type="text">
+				<label>Header Token Prefix</label>
+				<description>Type of Token which have to be specified for Authentication - (OAuth)</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="authMode" type="text">
 				<label>Authentication Mode</label>
 				<options>
 					<option value="BASIC">Basic Authentication</option>
 					<option value="BASIC_PREEMPTIVE">Preemptive Basic Authentication</option>
 					<option value="DIGEST">Digest Authentication</option>
+					<option value="OAuthV2">OAuth V2</option>
 				</options>
 				<default>BASIC</default>
 				<limitToOptions>true</limitToOptions>

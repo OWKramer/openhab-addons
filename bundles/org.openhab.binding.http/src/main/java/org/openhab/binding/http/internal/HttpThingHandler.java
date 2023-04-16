@@ -34,6 +34,7 @@ import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.http.internal.config.HttpAuthMode;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
 import org.openhab.binding.http.internal.config.HttpChannelMode;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
@@ -168,7 +169,7 @@ public class HttpThingHandler extends BaseThingHandler {
         config.headers.removeIf(String::isBlank);
 
         // configure authentication
-        if (!config.username.isEmpty()) {
+        if (!config.username.isEmpty() || (!config.Token.isEmpty() && config.authMode == HttpAuthMode.OAuthV2)) {
             try {
                 AuthenticationStore authStore = httpClient.getAuthenticationStore();
                 URI uri = new URI(config.baseURL);
@@ -187,6 +188,10 @@ public class HttpThingHandler extends BaseThingHandler {
                         authStore.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM,
                                 config.username, config.password));
                         logger.debug("Digest Authentication configured for thing '{}'", thing.getUID());
+                        break;
+                    case OAuthV2:
+                        config.headers.add("Authorization= " + config.HeaderTokenPrefix + " " + config.Token);
+                        logger.debug("OAuth V2 Authentication configured for thing '{}'", thing.getUID());
                         break;
                     default:
                         logger.warn("Unknown authentication method '{}' for thing '{}'", config.authMode,
