@@ -48,12 +48,39 @@
 				<context>password</context>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="tokenUrl" type="text">
+				<label>Token-URL</label>
+				<description>Token-URL to request token - (OAuth)</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="clientId" type="text">
+				<label>Client Id</label>
+				<description>Client Id that needs to be specified for token request - (OAuth)</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="clientSecret" type="text">
+				<label>Client Secret</label>
+				<description>Client Secret that needs to be specified for token request - (OAuth)</description>
+				<context>password</context>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="scope" type="text">
+				<label>Scope</label>
+				<description>Scope that needs to be specified for token request - (OAuth)</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="grantType" type="text">
+				<label>Grant Type</label>
+				<description>Grant Type that needs to be specified for token request - (OAuth)</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="authMode" type="text">
 				<label>Authentication Mode</label>
 				<options>
 					<option value="BASIC">Basic Authentication</option>
 					<option value="BASIC_PREEMPTIVE">Preemptive Basic Authentication</option>
 					<option value="DIGEST">Digest Authentication</option>
+					<option value="OAuthV2">OAuth V2</option>
 				</options>
 				<default>BASIC</default>
 				<limitToOptions>true</limitToOptions>

@@ -15,6 +15,7 @@ package org.openhab.binding.http.internal.http;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,7 @@ import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.Util;
+import org.openhab.binding.http.internal.config.HttpAuthMode;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +59,7 @@ public class RefreshingUrlCache {
     private final List<String> headers;
     private final HttpMethod httpMethod;
     private final String httpContent;
+    private final HttpThingConfig httpThingConfig;
 
     private final ScheduledFuture<?> future;
     private @Nullable Content lastContent;
@@ -71,6 +74,7 @@ public class RefreshingUrlCache {
         this.headers = thingConfig.headers;
         this.httpMethod = thingConfig.stateMethod;
         this.httpContent = httpContent;
+        this.httpThingConfig = thingConfig;
         fallbackEncoding = thingConfig.encoding;
 
         future = executor.scheduleWithFixedDelay(this::refresh, 1, thingConfig.refresh, TimeUnit.SECONDS);
@@ -99,7 +103,14 @@ public class RefreshingUrlCache {
                 headers.forEach(header -> {
                     String[] keyValuePair = header.split("=", 2);
                     if (keyValuePair.length == 2) {
-                        request.header(keyValuePair[0].trim(), keyValuePair[1].trim());
+                        if (keyValuePair[0].trim().equals("Authorization")
+                                && httpThingConfig.authMode == HttpAuthMode.OAuthV2 && httpThingConfig
+                                        .isTokenLifetimeExpired(Duration.ofSeconds(httpThingConfig.refresh + 1))) {
+                            request.header("Authorization".trim(), httpThingConfig.requestOAuthToken());
+                            logger.debug("Authorization is renewed with new Token");
+                        } else {
+                            request.header(keyValuePair[0].trim(), keyValuePair[1].trim());
+                        }
                     } else {
                         logger.warn("Splitting header '{}' failed. No '=' was found. Ignoring", header);
                     }

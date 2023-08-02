@@ -168,7 +168,7 @@ public class HttpThingHandler extends BaseThingHandler {
         config.headers.removeIf(String::isBlank);
 
         // configure authentication
-        if (!config.username.isEmpty()) {
+        if (!config.username.isEmpty() || config.checkOAuth2Fields()) {
             try {
                 AuthenticationStore authStore = httpClient.getAuthenticationStore();
                 URI uri = new URI(config.baseURL);
@@ -187,6 +187,10 @@ public class HttpThingHandler extends BaseThingHandler {
                         authStore.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM,
                                 config.username, config.password));
                         logger.debug("Digest Authentication configured for thing '{}'", thing.getUID());
+                        break;
+                    case OAuthV2:
+                        config.headers.add("Authorization=" + config.requestOAuthToken());
+                        logger.debug("OAuth V2 Authentication configured for thing '{}'", thing.getUID());
                         break;
                     default:
                         logger.warn("Unknown authentication method '{}' for thing '{}'", config.authMode,
